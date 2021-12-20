@@ -1,8 +1,8 @@
 use crate::wrap_expr::wrap_expr;
-use std::ops::Add;
-use syn::{spanned::Spanned, Expr};
 
-use crate::{wrap_expr, AddAwait};
+use syn::Expr;
+
+use crate::AddAwait;
 
 impl AddAwait for Expr {
     fn add_await(&mut self) {
@@ -11,7 +11,7 @@ impl AddAwait for Expr {
             Expr::Array(array) => array.add_await(),
             Expr::Assign(assign) => assign.add_await(),
             Expr::AssignOp(assign_op) => assign_op.add_await(),
-            Expr::Async(async_expr) => take_mut::take(self, wrap_expr),
+            Expr::Async(_async_expr) => take_mut::take(self, wrap_expr),
             Expr::Await(await_expr) => {
                 await_expr.add_await();
                 take_mut::take(self, wrap_expr)
@@ -24,7 +24,7 @@ impl AddAwait for Expr {
             Expr::Break(break_expr) => break_expr.add_await(),
             Expr::Call(call_expr) => {
                 call_expr.add_await();
-                take_mut::take(self, wrap_expr)
+                take_mut::take(self, wrap_expr);
             }
             Expr::Cast(cast_expr) => cast_expr.add_await(),
             Expr::Closure(closure_expr) => closure_expr.add_await(),
@@ -44,7 +44,7 @@ impl AddAwait for Expr {
             Expr::Match(match_expr) => match_expr.add_await(),
             Expr::MethodCall(method_call_expr) => {
                 method_call_expr.add_await();
-                take_mut::take(self, wrap_expr)
+                take_mut::take(self, wrap_expr);
             }
             Expr::Paren(paren_expr) => paren_expr.add_await(),
             Expr::Path(path_expr) => {
@@ -58,6 +58,7 @@ impl AddAwait for Expr {
             Expr::Struct(struct_expr) => struct_expr.add_await(),
             Expr::Try(try_expr) => {
                 try_expr.add_await();
+
                 take_mut::take(self, wrap_expr)
             }
             Expr::TryBlock(try_block_expr) => try_block_expr.add_await(),
@@ -65,7 +66,7 @@ impl AddAwait for Expr {
             Expr::Type(type_expr) => type_expr.add_await(),
             Expr::Unary(unary_expr) => unary_expr.add_await(),
             Expr::Unsafe(unsafe_expr) => unsafe_expr.add_await(),
-            Expr::Verbatim(verbatim_expr) => verbatim_expr.add_await(),
+            Expr::Verbatim(_) => (),
             Expr::While(while_expr) => while_expr.add_await(),
             Expr::Yield(yield_expr) => yield_expr.add_await(),
             _ => todo!(),
@@ -227,7 +228,7 @@ impl AddAwait for syn::ExprMatch {
 
 impl AddAwait for syn::Arm {
     fn add_await(&mut self) {
-        for (_, expr) in self.guard {
+        for (_, expr) in &mut self.guard {
             expr.add_await();
         }
         self.body.add_await();
@@ -307,22 +308,16 @@ impl AddAwait for syn::ExprTryBlock {
         self.block.add_await();
     }
 }
-/* NOT CHECKED */
+
 impl AddAwait for syn::ExprUnary {
     fn add_await(&mut self) {
         self.expr.add_await();
     }
 }
+/* NOT CHECKED */
 impl AddAwait for syn::ExprUnsafe {
     fn add_await(&mut self) {
         self.block.add_await();
-    }
-}
-impl AddAwait for syn::ExprVerbatim {
-    fn add_await(&mut self) {
-        /*
-            verbatim expressions are not futures
-        */
     }
 }
 impl AddAwait for syn::ExprWhile {
@@ -336,5 +331,18 @@ impl AddAwait for syn::ExprYield {
         if let Some(expr) = &mut self.expr {
             expr.add_await();
         }
+    }
+}
+impl AddAwait for syn::ExprTuple {
+    fn add_await(&mut self) {
+        for expr in &mut self.elems {
+            expr.add_await();
+        }
+    }
+}
+
+impl AddAwait for syn::ExprType {
+    fn add_await(&mut self) {
+        self.expr.add_await();
     }
 }

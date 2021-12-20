@@ -9,7 +9,8 @@ This crate provides a proc-macro that removes the need the use the `await` keywo
 #[suspend]
 fn foo() -> Result<(), reqwest::Error> {
     let response = reqwest::get("https://www.rust-lang.org")?;
-    println!("{}", response.text()?);
+    let text = response.text()?; 
+    println!("{}", text);
     Ok(())
 }
 ```

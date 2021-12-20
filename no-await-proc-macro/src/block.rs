@@ -1,5 +1,5 @@
 use super::AddAwait;
-use syn::Block; 
+use syn::Block;
 
 impl AddAwait for Block {
     fn add_await(&mut self) {

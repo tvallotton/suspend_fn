@@ -1,7 +1,10 @@
-#![allow(clippy::wrong_self_convention)]
+pub use no_await_proc_macro::suspend;
+
+#[doc(hidden)]
+#[allow(clippy::wrong_self_convention)]
 pub mod __private {
     use std::future::Future;
-    trait AsFuture {
+    pub trait AsFuture {
         type Output;
         fn as_future(self) -> std::future::Ready<Self::Output>;
     }
@@ -19,17 +22,4 @@ pub mod __private {
             self.0
         }
     }
-
-
-
-
 }
-
-#[cfg(test)]
-#[tokio::test]
-async fn test() {
-    println!("{}", crate::__private::Expr(async { 1 }).as_future().await);
-
-    println!("{}", Expr(10).as_future().await);
-}
-
