@@ -1,0 +1,9 @@
+[package]
+name = "implicit-await"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+
+[dev-dependencies]
+tokio = { version = "1.15.0", features = ["macros", "rt-multi-thread"] }

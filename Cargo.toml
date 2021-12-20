@@ -1,0 +1,7 @@
+[workspace]
+
+
+members = [
+    "implicit-await",
+    "implicit-await-proc-macro", 
+]
