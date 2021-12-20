@@ -1,5 +1,5 @@
 [package]
-name = "no-await-proc-macro"
+name = "suspend_fn_proc_macro"
 version = "0.1.0"
 edition = "2021"
 

@@ -1,12 +1,12 @@
 [package]
-name = "no-await"
+name = "suspend_fn"
 version = "0.1.0"
 edition = "2021"
 
 [features]
 
 [dependencies]
-no-await-proc-macro = {path ="../no-await-proc-macro"}
+suspend_fn_proc_macro = {path ="../suspend_fn_proc_macro"}
 
 
 [dev-dependencies]

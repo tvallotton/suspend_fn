@@ -2,32 +2,57 @@
 
 
 # No-Await
-**Disclaimer: this is a proof of concept. It is not intended to be used in production. **
+**Disclaimer: this was mostly made as a proof of concept. 
+I have tested if there is a performance cost to this macro. **
 
 This crate provides a proc-macro that removes the need the use the `await` keyword.
+
+For example: 
 ```rust
-#[suspend]
-fn foo() -> Result<(), reqwest::Error> {
+#[suspend_fn]
+fn visit_rustlang() -> Result<(), reqwest::Error> {
     let response = reqwest::get("https://www.rust-lang.org")?;
-    let text = response.text()?; 
+    let text = response.text()?;
     println!("{}", text);
+    text.len(); // sync functions work just fine!
     Ok(())
 }
 ```
 the above code is functionally equivalent to:
 ```rust
-
-async fn foo() -> Result<(), reqwest::Error> {
+async fn visit_rustlang() -> Result<(), reqwest::Error> {
     let response = reqwest::get("https://www.rust-lang.org").await?;
-    println!("{}", response.text().await?);
+    let text = response.text().await?;
+    println!("{}", text);
+    
+    text.len(); 
     Ok(())
 }
 ```
-The crate is presented as a proposal for the allowing the following syntax: 
+
+## Scaping futures
+In simple terms, the macro works by inserting a `.await` after every future. 
+
+if you need to escape a future, you can use an async block:
+```
+```
+
+## Limitations
+Currently, the macro does not work inside other macros. 
+For example: 
+```rust
+println!("{}", async_fn());
+```
+the above code will raise the following error message: 
+```rust
+| println!("{}", async_fn()); 
+|                ^^^^^^^^^^  `impl Future` cannot be formatted with the default formatter
+```
+
+
+The crate is presented as a proposal for allowing the following syntax: 
 ```rust
 suspend fn foo() -> Result<(), reqwest::Error> {
-    let response = reqwest::get("https://www.rust-lang.org")?;
-    println!("{}", response.text()?);
-    Ok(())
+   /* implicit await */
 }
 ```

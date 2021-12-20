@@ -2,7 +2,7 @@
 
 
 members = [
-    "no-await",
-    "no-await-proc-macro", 
-    "no-await-tests"
+    "suspend_fn",
+    "suspend_fn_proc_macro", 
+    "suspend_fn_tests"
 ]

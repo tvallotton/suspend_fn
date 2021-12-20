@@ -1,4 +1,6 @@
-pub use no_await_proc_macro::suspend;
+#![doc = include_str!("../../README.md")]
+
+pub use suspend_fn_proc_macro::{suspend, suspend_fn, suspend_move};
 
 #[doc(hidden)]
 #[allow(clippy::wrong_self_convention)]
