@@ -3,7 +3,6 @@
 I haven't tested if there is a performance cost to this macro. **
 
 This crate provides a proc-macro that removes the need the use the `await` keyword. 
-
 For example: 
 ```rust
 #[suspend_fn]
@@ -60,22 +59,36 @@ async destructors would lead to inconsistencies from a langauge design perspecti
 This is because the compiler would introduce `.await` calls for async destructors, 
 making some `.await` calls implicit and others explicit. 
 
-As a way to resolve this conflict, the removal of the `.await` syntax entirely. 
-Although, I think this would me great from an ergonomics, I would not like 
+As a way to resolve this conflict, it was proposed the removal of the `.await` syntax entirely. 
+Although I think this would me great from an ergonomics perspective, I would not like 
 to see such a big breaking change. Alteratively, I propose the addition of a new keyword, 
 analogous to `async`, for the moment let's copy Kotlin's `suspend`. 
 
 Then we could have: 
 ```rust
-suspend fn function {
+suspend fn function() {
     /* 
-        implicit await with implicit async destructors
+        implicit await with implicit calls to async destructors
+    */
+}
+async fn function() {
+    /* 
+        explicit await with explicit calls to async destructors
     */
 }
 
-async fn function {
+async {
     /* 
-        explicit await with explicit async destructors
+        explicit await with explicit calls to async destructors
+    */
+}
+
+suspend {
+    /* 
+        implicit await with implicit calls to async destructors
     */
 }
 ```
+
+## further readings
+* poll_drop
