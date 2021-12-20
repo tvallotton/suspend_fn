@@ -5,5 +5,9 @@ edition = "2021"
 
 [features]
 
+[dependencies]
+no-await-proc-macro = {path ="../no-await-proc-macro"}
+
+
 [dev-dependencies]
 tokio = { version = "1.15.0", features = ["macros", "rt-multi-thread"] }
