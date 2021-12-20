@@ -1,11 +1,8 @@
+# suspend fn
+**Disclaimer: this was mostly made as a proof of concept for the proposal below. 
+I haven't tested if there is a performance cost to this macro. **
 
-
-
-# No-Await
-**Disclaimer: this was mostly made as a proof of concept. 
-I have tested if there is a performance cost to this macro. **
-
-This crate provides a proc-macro that removes the need the use the `await` keyword.
+This crate provides a proc-macro that removes the need the use the `await` keyword. 
 
 For example: 
 ```rust
@@ -30,14 +27,20 @@ async fn visit_rustlang() -> Result<(), reqwest::Error> {
 }
 ```
 
-## Scaping futures
-In simple terms, the macro works by inserting a `.await` after every future. 
-
-if you need to escape a future, you can use an async block:
+## suspend blocks
+You can also use `suspend!` and `suspend_move!` macros similarlly to `async` and `async move` blocks.
+Note that these might prompt style warnings, so I recommend placing `#![allow(unused_parens)]` in the crate root.
+```rust
+#![allow(unused_parens)]
+suspend! { 
+    let response = reqwest::get("https://www.rust-lang.org")?;
+    let text = response.text()?;
+    println!("{}", text);
+    text.len(); 
+}
 ```
-```
 
-## Limitations
+## limitations
 Currently, the macro does not work inside other macros. 
 For example: 
 ```rust
@@ -49,10 +52,30 @@ the above code will raise the following error message:
 |                ^^^^^^^^^^  `impl Future` cannot be formatted with the default formatter
 ```
 
+for such cases you may simply use `.await` in the macro yourself. 
 
-The crate is presented as a proposal for allowing the following syntax: 
+## motivation
+In a recent blog post discussing the async cacellation problem, it was argued that 
+async destructors would lead to inconsistencies from a langauge design perspective. 
+This is because the compiler would introduce `.await` calls for async destructors, 
+making some `.await` calls implicit and others explicit. 
+
+As a way to resolve this conflict, the removal of the `.await` syntax entirely. 
+Although, I think this would me great from an ergonomics, I would not like 
+to see such a big breaking change. Alteratively, I propose the addition of a new keyword, 
+analogous to `async`, for the moment let's copy Kotlin's `suspend`. 
+
+Then we could have: 
 ```rust
-suspend fn foo() -> Result<(), reqwest::Error> {
-   /* implicit await */
+suspend fn function {
+    /* 
+        implicit await with implicit async destructors
+    */
+}
+
+async fn function {
+    /* 
+        explicit await with explicit async destructors
+    */
 }
 ```

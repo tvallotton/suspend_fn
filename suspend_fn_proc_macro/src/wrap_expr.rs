@@ -30,7 +30,7 @@ pub fn wrap_expr(expr: Expr) -> Expr {
                             segments: {
                                 let mut segments = Punctuated::new();
                                 segments.push(PathSegment {
-                                    ident: Ident::new("no_await", span),
+                                    ident: Ident::new("suspend_fn", span),
                                     arguments: PathArguments::None,
                                 });
                                 segments.push(PathSegment {
