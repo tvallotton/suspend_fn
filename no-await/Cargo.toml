@@ -1,5 +1,5 @@
 [package]
-name = "implicit-await"
+name = "no-await"
 version = "0.1.0"
 edition = "2021"
 

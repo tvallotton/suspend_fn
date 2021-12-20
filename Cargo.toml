@@ -2,6 +2,6 @@
 
 
 members = [
-    "implicit-await",
-    "implicit-await-proc-macro", 
+    "no-await",
+    "no-await-proc-macro", 
 ]
